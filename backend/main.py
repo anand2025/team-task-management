@@ -83,6 +83,14 @@ def read_task(task_id: int, db: Session = Depends(database.get_db), current_user
         raise HTTPException(status_code=404, detail="Task not found")
     return task
 
+# Mount frontend build for production (Railway)
+import os
+try:
+    app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="static")
+except:
+    print("Frontend dist not found, serving API only")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port)
