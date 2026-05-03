@@ -57,8 +57,8 @@ A full-stack Team Task Management application built with FastAPI and React.
 └────────────────────────┼─────────────────────────────────┘
                          │
                 ┌────────▼────────┐
-                │   SQLite / DB   │
-                │   (sql_app.db)  │
+                │   PostgreSQL    │
+                │   (Render DB)   │
                 └─────────────────┘
 ```
 
@@ -155,7 +155,7 @@ FastAPI receives request
 CORS Middleware → JWT Dependency (validates token)
         │
         ▼
-Route Handler → CRUD function → SQLAlchemy → SQLite
+Route Handler → CRUD function → SQLAlchemy → PostgreSQL
         │
         ▼
 Pydantic schema validates response → JSON returned
@@ -165,9 +165,9 @@ React updates UI state
 ```
 
 ## 🛠 Tech Stack
-- **Backend**: FastAPI, SQLAlchemy, SQLite, Pydantic, python-jose (JWT), passlib (bcrypt).
+- **Backend**: FastAPI, SQLAlchemy, Postgresql, Pydantic, python-jose (JWT), passlib (bcrypt).
 - **Frontend**: React (Vite), React Router, Axios, Lucide Icons, Vanilla CSS.
-- **Deployment**: Docker (multi-stage build), Railway-ready.
+- **Deployment**: Docker (multi-stage build), Render and Vercel.
 
 ## 📦 Setup & Installation
 

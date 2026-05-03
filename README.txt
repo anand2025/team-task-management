@@ -63,8 +63,8 @@ ARCHITECTURE OVERVIEW
 +----------------------------+-----------------------------+
                              |
                     +--------v--------+
-                    |   SQLite / DB   |
-                    |   (sql_app.db)  |
+                    |   PostgreSQL    |
+                    |   (Render DB)   |
                     +-----------------+
 
 
@@ -159,7 +159,7 @@ REQUEST FLOW
   CORS Middleware --> JWT Dependency (validates token)
           |
           v
-  Route Handler --> CRUD function --> SQLAlchemy --> SQLite
+  Route Handler --> CRUD function --> SQLAlchemy --> PostgreSQL
           |
           v
   Pydantic schema validates response --> JSON returned
@@ -172,7 +172,7 @@ REQUEST FLOW
                         TECH STACK
 ==============================================================
 
-  Backend:    FastAPI, SQLAlchemy, SQLite, Pydantic, 
+  Backend:    FastAPI, SQLAlchemy, PostgreSQL, Pydantic, 
               python-jose (JWT), passlib (bcrypt)
   Frontend:   React (Vite), React Router, Axios, 
               Lucide Icons, Vanilla CSS
@@ -201,12 +201,53 @@ REQUEST FLOW
                        DEPLOYMENT
 ==============================================================
 
-This app is configured for Railway. Simply connect your 
-GitHub repo and Railway will use the provided Dockerfile 
-to build and deploy.
+  This app is deployed using:
+    - Backend  → Render  (https://render.com)
+    - Frontend → Vercel  (https://vercel.com)
+    - Database → Render PostgreSQL (free tier)
 
-Set the environment variables in your Railway service 
-settings before deploying.
+
+  BACKEND DEPLOYMENT (Render)
+  ------------------------------
+  1. Go to render.com → New → Web Service
+  2. Connect your GitHub repo
+  3. Set Root Directory: backend
+  4. Build Command:  pip install -r requirements.txt
+  5. Start Command:  uvicorn main:app --host 0.0.0.0 --port $PORT
+  6. Add the following Environment Variables:
+
+     Key                         Value
+     ---                         -----
+     DATABASE_URL                (copy Internal DB URL from Render PostgreSQL)
+     SECRET_KEY                  (generate: python -c "import secrets; print(secrets.token_hex(32))")
+     ALGORITHM                   HS256
+     ACCESS_TOKEN_EXPIRE_MINUTES 1440
+     APP_ENV                     production
+
+  Note: DATABASE_URL is automatically corrected from postgres:// to
+        postgresql:// at runtime for SQLAlchemy compatibility.
+
+
+  DATABASE SETUP (Render PostgreSQL)
+  ------------------------------------
+  1. Render Dashboard → New → PostgreSQL
+  2. Create a free database
+  3. Copy the "Internal Database URL"
+  4. Paste it as the DATABASE_URL env var in your Web Service
+
+
+  FRONTEND DEPLOYMENT (Vercel)
+  ------------------------------
+  1. Go to vercel.com → New Project
+  2. Connect your GitHub repo
+  3. Set Root Directory: frontend
+  4. Add the following Environment Variable:
+
+     Key             Value
+     ---             -----
+     VITE_API_URL    https://your-app-name.onrender.com
+
+  5. Deploy → Redeploy after saving env vars
 
 
 ==============================================================
